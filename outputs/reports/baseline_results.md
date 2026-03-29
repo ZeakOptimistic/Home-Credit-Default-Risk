@@ -1,8 +1,8 @@
 # Baseline Results
 
 ## Dataset
-- Train shape: (307511, 123)
-- Test shape: (48744, 122)
+- Train shape: (307511, 122)
+- Test shape: (48744, 121)
 - Positive rate: 0.0807
 - Number of categorical columns: 16
 - Number of numeric columns: 105
@@ -14,8 +14,8 @@
 - OOF AUC: 0.759895
 
 ## Outputs
-- Submission file: c:\Coding\Home-Credit-Default-Risk\outputs\submissions\baseline_main_table_catboost.csv
-- Feature importance figure: c:\Coding\Home-Credit-Default-Risk\outputs\figures\baseline_main_table_feature_importance.png
+- Submission file: C:\Coding\Home-Credit-Default-Risk\outputs\submissions\baseline_main_table_catboost.csv
+- Feature importance figure: C:\Coding\Home-Credit-Default-Risk\outputs\figures\baseline_main_table_feature_importance.png
 
 ## Notes
 - This baseline uses only the main application table.
