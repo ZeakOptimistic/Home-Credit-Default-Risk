@@ -3,3 +3,5 @@ data/processed/
 __pycache__/
 .ipynb_checkpoints/
 outputs/figures/
+outputs/models/
+notebooks/catboost_info/

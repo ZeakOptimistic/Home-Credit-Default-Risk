@@ -1,0 +1,5 @@
+order,model_key,model_name,mean_fold_auc,oof_auc,report_file,submission_file,lift_vs_previous,lift_vs_baseline
+1,baseline,Baseline (Main Table),0.759922,0.759895,baseline_results.md,baseline_main_table_catboost.csv,,0.0
+2,bureau,Main + Bureau,0.765376,0.765354,model_v2_with_bureau.md,model_v2_bureau.csv,0.005458999999999992,0.005458999999999992
+3,bureau_previous,Main + Bureau + Previous,0.772989,0.772974,model_v3_bureau_previous.md,model_v3_bureau_previous.csv,0.007620000000000071,0.013079000000000063
+4,payments,Main + Bureau + Previous + Payments,0.785389,0.785274,model_v4_with_payments.md,model_v4_with_payments.csv,0.012299999999999978,0.02537900000000004
