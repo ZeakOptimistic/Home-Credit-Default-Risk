@@ -2,7 +2,6 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-# Original names used by older notebooks
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
 SAMPLE_DATA_DIR = PROJECT_ROOT / "data" / "sample"
@@ -12,16 +11,6 @@ FIGURES_DIR = OUTPUT_DIR / "figures"
 REPORTS_DIR = OUTPUT_DIR / "reports"
 MODELS_DIR = OUTPUT_DIR / "models"
 SUBMISSIONS_DIR = OUTPUT_DIR / "submissions"
-
-# Aliases for newer code
-DATA_RAW_DIR = RAW_DATA_DIR
-DATA_PROCESSED_DIR = PROCESSED_DATA_DIR
-DATA_SAMPLE_DIR = SAMPLE_DATA_DIR
-
-FIG_DIR = FIGURES_DIR
-REPORT_DIR = REPORTS_DIR
-MODEL_DIR = MODELS_DIR
-SUBMISSION_DIR = SUBMISSIONS_DIR
 
 TARGET_COL = "TARGET"
 ID_COL = "SK_ID_CURR"

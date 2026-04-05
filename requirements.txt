@@ -1,8 +1,22 @@
+# Core
 pandas
 numpy
+scikit-learn
+catboost
+
+# Data processing
+pyarrow
+fastparquet
+
+# Data Viz
 matplotlib
 seaborn
-scikit-learn
+
+# Jupyter
 jupyter
-pyarrow
-catboost
+nbformat
+
+# Code Quality (Dev)
+black
+isort
+ruff

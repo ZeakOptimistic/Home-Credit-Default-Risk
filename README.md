@@ -1,5 +1,8 @@
 # Home Credit Default Risk
 
+![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+
 ## 1. Problem Statement
 Home Credit Default Risk is a binary classification problem: predict the probability that a loan applicant will have repayment difficulties (`TARGET=1`). The competition metric is ROC-AUC, so the project focuses on ranking risky applicants correctly rather than maximizing plain accuracy.
 
@@ -14,46 +17,34 @@ Home-Credit-Default-Risk/
 │   ├── processed/
 │   └── sample/
 ├── notebooks/
-│   ├── 01_data_audit.ipynb
-│   ├── 02_eda_main_table.ipynb
-│   ├── 03_baseline_main_table.ipynb
-│   ├── 04_bureau_features.ipynb
-│   ├── 05_model_with_bureau.ipynb
-│   ├── 06_previous_application_features.ipynb
-│   ├── 07_model_with_previous.ipynb
-│   ├── 08_payment_history_features.ipynb
-│   ├── 09_model_with_payments.ipynb
-│   ├── 10_error_analysis.ipynb
-│   └── 11_final_submission_and_report.ipynb
+│   ├── 01_eda_and_audit.ipynb
+│   ├── 02_feature_engineering_and_modeling.ipynb
+│   └── 03_error_analysis_and_submission.ipynb
 ├── src/
 │   ├── __init__.py
 │   ├── config.py
 │   ├── data_loader.py
 │   ├── preprocessing.py
+│   ├── features.py
 │   ├── train.py
-│   ├── inference.py
-│   ├── features_bureau.py
-│   ├── features_previous.py
-│   └── features_payments.py
+│   └── inference.py
 ├── outputs/
 │   ├── figures/
 │   ├── models/
 │   ├── reports/
 │   └── submissions/
-├── README.md
+├── Makefile
 ├── requirements.txt
-└── .gitignore
+└── README.md
 ```
 
 ## 4. Methodology
 1. Audit the dataset structure and join keys.
 2. Perform EDA on the main application table.
 3. Build a baseline model using only the main table.
-4. Engineer relational features from bureau history.
-5. Add previous application features.
-6. Add payment-history features from installments, POS cash, and credit card balance.
-7. Train a full 5-fold CatBoost model and evaluate with OOF ROC-AUC.
-8. Perform error analysis on false positives, false negatives, and feature-family importance.
+4. Engineer relational features from bureau history, previous applications, and payment history.
+5. Train a full 5-fold CatBoost model and evaluate with OOF ROC-AUC.
+6. Perform error analysis on false positives, false negatives, and feature-family importance.
 
 ## 5. Feature Engineering Overview
 Feature engineering is the core of this project. I created:
@@ -78,28 +69,20 @@ Best model: **Main + Bureau + Previous + Payments**
 Best OOF AUC: **0.785274**
 
 Generated figures:
-- `outputs/figures/final_report/01_model_comparison.png`
-- `outputs/figures/final_report/02_project_pipeline_overview.png`
+- `outputs/figures/01_model_comparison.png`
+- `outputs/figures/02_project_pipeline_overview.png`
 
 ## 7. How to Reproduce
 1. Clone the repository.
 2. Place the full Kaggle competition data into `data/raw/`.
-3. Install dependencies from `requirements.txt`.
-4. Run notebooks in order:
-   - `01_data_audit.ipynb`
-   - `02_eda_main_table.ipynb`
-   - `03_baseline_main_table.ipynb`
-   - `04_bureau_features.ipynb`
-   - `05_model_with_bureau.ipynb`
-   - `06_previous_application_features.ipynb`
-   - `07_model_with_previous.ipynb`
-   - `08_payment_history_features.ipynb`
-   - `09_model_with_payments.ipynb`
-   - `10_error_analysis.ipynb`
-   - `11_final_submission_and_report.ipynb`
+3. Install dependencies from `requirements.txt` via `pip install -r requirements.txt`.
+4. Run Jupyter notebooks in order:
+   - `01_eda_and_audit.ipynb`
+   - `02_feature_engineering_and_modeling.ipynb`
+   - `03_error_analysis_and_submission.ipynb`
 5. Use the generated file in `outputs/submissions/final_submission.csv` for Kaggle submission.
 
 ## Notes
-- Do not commit raw data to GitHub.
-- The dataset is relational and requires aggregation from one-to-many history tables to the customer level (`SK_ID_CURR`).
+- Do not commit raw data to GitHub (`data/` and `outputs/` are gitignored).
+- Formatting is governed by `black` and `isort` which can be run using `make format`.
 - The strongest gains in this project come from relational feature engineering, not from trying many different model families.

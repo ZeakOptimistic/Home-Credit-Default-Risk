@@ -1,7 +1,31 @@
-data/raw/
-data/processed/
+# Data and caches
+data/*
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/sample/.gitkeep
+
+# Outputs
+outputs/*
+!outputs/.gitkeep
+!outputs/figures/.gitkeep
+!outputs/models/.gitkeep
+!outputs/reports/.gitkeep
+!outputs/submissions/.gitkeep
+
+# Environments & Python
+.env
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
-outputs/figures/
-outputs/models/
-notebooks/catboost_info/
+.pytest_cache/
+.coverage
+.virtual_documents/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
