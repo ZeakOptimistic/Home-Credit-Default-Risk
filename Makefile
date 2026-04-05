@@ -1,4 +1,8 @@
-.PHONY: format lint clean
+.PHONY: format lint clean run
+
+# End-to-end training and submission execution
+run:
+	python main.py
 
 # Code formatting and linting
 format:

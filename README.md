@@ -74,15 +74,24 @@ Generated figures:
 
 ## 7. How to Reproduce
 1. Clone the repository.
-2. Place the full Kaggle competition data into `data/raw/`.
-3. Install dependencies from `requirements.txt` via `pip install -r requirements.txt`.
-4. Run Jupyter notebooks in order:
+2. Place the full Kaggle competition data into `data/raw/` (or use your own sample data).
+3. Install dependencies from `requirements.txt` via:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Interactive Exploration Mode**: You can walk through the data manually using the Jupyter notebooks.
    - `01_eda_and_audit.ipynb`
    - `02_feature_engineering_and_modeling.ipynb`
    - `03_error_analysis_and_submission.ipynb`
-5. Use the generated file in `outputs/submissions/final_submission.csv` for Kaggle submission.
+   
+5. **Full Pipeline Mode**: You can auto-generate the complete feature set and train the algorithms automatically by executing the entrypoint script.
+   ```bash
+   make run
+   # Or simply: python main.py
+   ```
+6. The fully trained predictions will generate in `outputs/submissions/final_submission_lgbm.csv`.
 
 ## Notes
 - Do not commit raw data to GitHub (`data/` and `outputs/` are gitignored).
 - Formatting is governed by `black` and `isort` which can be run using `make format`.
-- The strongest gains in this project come from relational feature engineering, not from trying many different model families.
+- The strongest gains in this project come from relational feature engineering, specifically capturing lateness and limit behaviors within the client financial histories.

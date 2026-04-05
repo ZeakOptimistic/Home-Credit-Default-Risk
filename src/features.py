@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import gc
 from src.config import RAW_DATA_DIR, PROCESSED_DATA_DIR
 
 # ----------------- BUREAU FEATURES -----------------
@@ -149,4 +150,93 @@ def build_previous_application_features(save: bool = True) -> pd.DataFrame:
     if save:
         PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
         final_features.to_parquet(PROCESSED_DATA_DIR / "previous_application_features.parquet", index=False)
+    return final_features
+
+# ----------------- PAYMENTS FEATURES (MEMORY EFFICIENT) -----------------
+
+def build_installments_features(save: bool = True) -> pd.DataFrame:
+    base = pd.read_csv(RAW_DATA_DIR / "application_train.csv", usecols=["SK_ID_CURR"])
+    base = pd.concat([base, pd.read_csv(RAW_DATA_DIR / "application_test.csv", usecols=["SK_ID_CURR"])], ignore_index=True)
+    base = base.drop_duplicates(subset=["SK_ID_CURR"]).reset_index(drop=True)
+    
+    inst = pd.read_csv(RAW_DATA_DIR / "installments_payments.csv")
+    inst["PAYMENT_PERC"] = inst["AMT_PAYMENT"] / inst["AMT_INSTALMENT"]
+    inst["PAYMENT_DIFF"] = inst["AMT_INSTALMENT"] - inst["AMT_PAYMENT"]
+    inst["DPD"] = inst["DAYS_ENTRY_PAYMENT"] - inst["DAYS_INSTALMENT"]
+    inst["DPD"] = inst["DPD"].apply(lambda x: x if x > 0 else 0)
+    inst["DBD"] = inst["DAYS_INSTALMENT"] - inst["DAYS_ENTRY_PAYMENT"]
+    inst["DBD"] = inst["DBD"].apply(lambda x: x if x > 0 else 0)
+    
+    agg_dict = {
+        "NUM_INSTALMENT_VERSION": ["nunique"],
+        "DPD": ["max", "mean", "sum"],
+        "DBD": ["max", "mean", "sum"],
+        "PAYMENT_PERC": ["max", "mean", "sum", "var"],
+        "PAYMENT_DIFF": ["max", "mean", "sum", "var"],
+        "AMT_INSTALMENT": ["max", "mean", "sum"],
+        "AMT_PAYMENT": ["min", "max", "mean", "sum"],
+        "DAYS_ENTRY_PAYMENT": ["max", "mean", "sum"]
+    }
+    
+    inst_agg = inst.groupby("SK_ID_CURR").agg(agg_dict)
+    inst_agg.columns = ["INSTAL_" + "_".join(col).upper() for col in inst_agg.columns]
+    inst_agg.reset_index(inplace=True)
+    del inst
+    gc.collect()
+    
+    final_features = base.merge(inst_agg, on="SK_ID_CURR", how="left")
+    for col in final_features.columns:
+        if final_features[col].dtype == "float64": final_features[col] = final_features[col].astype("float32")
+            
+    if save:
+        PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+        final_features.to_parquet(PROCESSED_DATA_DIR / "installments_features.parquet", index=False)
+    return final_features
+
+def build_pos_cash_features(save: bool = True) -> pd.DataFrame:
+    base = pd.read_csv(RAW_DATA_DIR / "application_train.csv", usecols=["SK_ID_CURR"])
+    base = pd.concat([base, pd.read_csv(RAW_DATA_DIR / "application_test.csv", usecols=["SK_ID_CURR"])], ignore_index=True)
+    base = base.drop_duplicates(subset=["SK_ID_CURR"]).reset_index(drop=True)
+    
+    pos = pd.read_csv(RAW_DATA_DIR / "POS_CASH_balance.csv")
+    pos_agg = pos.groupby("SK_ID_CURR").agg({
+        "MONTHS_BALANCE": ["max", "mean", "size"],
+        "SK_DPD": ["max", "mean"],
+        "SK_DPD_DEF": ["max", "mean"]
+    })
+    pos_agg.columns = ["POS_" + "_".join(col).upper() for col in pos_agg.columns]
+    pos_agg.reset_index(inplace=True)
+    del pos
+    gc.collect()
+    
+    final_features = base.merge(pos_agg, on="SK_ID_CURR", how="left")
+    for col in final_features.columns:
+        if final_features[col].dtype == "float64": final_features[col] = final_features[col].astype("float32")
+            
+    if save:
+        final_features.to_parquet(PROCESSED_DATA_DIR / "pos_cash_features.parquet", index=False)
+    return final_features
+
+def build_credit_card_features(save: bool = True) -> pd.DataFrame:
+    base = pd.read_csv(RAW_DATA_DIR / "application_train.csv", usecols=["SK_ID_CURR"])
+    base = pd.concat([base, pd.read_csv(RAW_DATA_DIR / "application_test.csv", usecols=["SK_ID_CURR"])], ignore_index=True)
+    base = base.drop_duplicates(subset=["SK_ID_CURR"]).reset_index(drop=True)
+    
+    cc = pd.read_csv(RAW_DATA_DIR / "credit_card_balance.csv")
+    # Exclude non-numeric for easy aggregation
+    cc_numeric = cc.drop(columns=["SK_ID_PREV", "NAME_CONTRACT_STATUS"], errors="ignore")
+    cc_agg = cc_numeric.groupby("SK_ID_CURR").agg(["min", "max", "mean", "sum", "var"])
+    cc_agg.columns = ["CC_" + "_".join(col).upper() for col in cc_agg.columns]
+    cc_agg.reset_index(inplace=True)
+    cc_agg["CC_COUNT"] = cc.groupby("SK_ID_CURR").size().values
+    del cc
+    del cc_numeric
+    gc.collect()
+    
+    final_features = base.merge(cc_agg, on="SK_ID_CURR", how="left")
+    for col in final_features.columns:
+        if final_features[col].dtype == "float64": final_features[col] = final_features[col].astype("float32")
+            
+    if save:
+        final_features.to_parquet(PROCESSED_DATA_DIR / "credit_card_features.parquet", index=False)
     return final_features
